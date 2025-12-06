@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flavours of Home</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="hamburger" onclick="toggleNav()">☰</div>
+  <div id="overlay" onclick="toggleNav()"></div> 
+
+  <div class="carousel-container">
+    <button class="nav prev" onclick="moveSlide(-1)">❮</button>
+    <div class="carousel-track" id="carouselTrack">
+      <img src="image1.png" alt="Image 1" />
+      <img src="image2.png" alt="Image 2" />
+      <img src="image3.png" alt="Image 3" />
+      <img src="image4.png" alt="Image 4" />
+      <img src="image5.png" alt="Image 5" />
+      <img src="image6.png" alt="Image 6" />
+      <img src="image7.png" alt="Image 7" />
+      <img src="image8.jpg" alt="Image 8" />
+      <img src="image9.jpg" alt="Image 9" />
+      <img src="image10.jpg" alt="Image 10" />
+      <img src="image11.jpg" alt="Image 11" />
+      <img src="image12.jpg" alt="Image 12" />
+      <img src="image13.jpg" alt="Image 13" />
+      <img src="image14.jpg" alt="Image 14" />
+      <img src="image15.jpg" alt="Image 15" />
+      <img src="image16.jpg" alt="Image 16" />
+    </div>
+    <button class="nav next" onclick="moveSlide(1)">❯</button>
+  </div>
+
+  <nav id="sidebar">
+    <button onclick="toggleSection('home')">🏠 Home</button>
+    <button onclick="toggleSection('contact')">📞 Contact Us</button>
+    <button onclick="toggleSection('why')">🌟 Why Choose Us?</button>
+    <button onclick="toggleSection('order-summary')">🛒View Cart</button>
+    
+  </nav>
+
+  <header class="header">
+    <img src="logo.png" alt="Flavours of Home Logo" class="logo" />
+    <div class="header-text">
+      <h1>Flavours of Home</h1>
+      <p class="tagline">Flavours from our kitchen to your hearts – By Madhavi Srinivas Rao Nellutla</p>
+    </div>
+  </header>
+  
+  
+<button id="home-btn" style="display: none;" onclick="goHome()">← Back Home 🏠 </button>
+
+
+<div class="search-container">
+  <input type="text" id="search-bar" placeholder="Search for items..." oninput="filterItems()" />
+  <button id="search-button" onclick="filterItems()">🔍</button>
+  <button id="clear-button" onclick="clearSearch()">❌</button>
+</div>
+<p id="no-results" style="display: none; color: red;">No results found.</p>
+
+
+  <main id="products"></main>
+
+  <section class="notes" id="why">
+    <h2>Why Choose Us?</h2>
+    <ul>
+      <li>✅ 100% Homemade</li>
+      <li>🍽️ Made fresh upon receiving your order</li>
+      <li>🌿 No preservatives</li>
+      <li>🌶️ Custom spice levels</li>
+      <li>💪 Supports digestion & metabolism</li>
+    </ul>
+  </section>
+
+  <section class="Contact" id="contact">
+    <h2>Reach out to us at:</h2>
+    <p>📞 Call us: <a href="tel:+919848090705">+91 9848090705</a></p>
+    <p>💬 Whatsapp us: <a href="https://wa.me/919848090705" target="_blank">Click here to Chat on WhatsApp</a></p>
+    <p>📷 Follow us on Instagram: <a href="https://www.instagram.com/__flavours__of__home__/" target="_blank">@__flavours__of__home__</a></p>
+  </section>
+  
+<section class="cart" id="order-summary">
+  <h2>🛒 Order Summary</h2>
+  <ul id="cart-items"></ul>
+  <p><strong>Total:</strong> ₹<span id="total">0</span></p>
+  <button onclick="confirmOrder()">Send Order via WhatsApp</button>
+</section>
+
+
+  <script>
+    const categories = [ 
+      { name: "🍬 Sweets", items: [
+        { name: "Motichoor Laddu", price: 500 },
+        { name: "Sesame Laddu", price: 400 },
+        { name: "Peanut Laddu", price: 400 },
+        { name: "Coconut Laddu", price: 400 },
+        { name: "Dry Fruit Laddu", price: 1200 },
+        { name: "Urad Dal Sunnundalu", price: 550 },
+        { name: "Ragi Laddu", price: 500 },
+        { name: "Boondhi Laddu", price: 450 },
+        { name: "Rose Flowers", price: 500},
+        { name: "Besan Laddu", price: 500 },
+        { name: "Ariselu", price: 500 },
+        { name: "Bhakshaalu", price: 400 },
+        { name: "Garijalu", price: 400 }
+      ]},
+      { name: "🌶️ Homemade Spice Mixes & Chilli Powders", items: [
+        { name: "Sesame Spice Powder", price: 400 },
+        { name: "Sesame + Peanut Spice Powder", price: 400 },
+        { name: "Flax Seeds Spice Powder", price: 500 },
+        { name: "Mixed Seeds Spice Powder", price: 600 },
+        { name: "Garlic Spice Powder", price: 350 },
+        { name: "Dry Coconut Spice Powder", price: 400 },
+        { name: "Dry Bitter Gourd Garlic Spice Mix", price: 400 },
+        { name: "Gongura Spice Powder", price: 500 },
+        { name: "Mint Spice Powder", price: 500 }
+      ]},
+      { name: "🍲 Homemade Powders", items: [
+        { name: "Kandi Podi", price: 350 },
+        { name: "Pesara Podi", price: 350 },
+        { name: "Curry Leaf Powder", price: 350 },
+        { name: "Drumstick Leaf Powder", price: 400 },
+        { name: "Roasted Chana Dal Powder", price: 300 }
+      ]},
+      { name: "🧂 Pickles", items: [
+        { name: "Tomato Pickle", price: 400 },
+        { name: "Lemon Pickle", price: 400 },
+        { name: "Gooseberry Pickle", price: 400 },
+        { name: "Mango Pickle", price: 400 },
+        { name: "Ginger-Garlic Mango Pickle", price: 500 },
+        { name: "Sun-dried Red Chilli Pickle", price: 400 },
+        { name: "Pulihora Mix", price: 400 },
+        { name: "Gongura Pickle", price: 500 }
+      ]},
+      { name: "🌟 Our Special Items", items: [
+        { name: "Atukulu Chudwa", price: 400 },
+        { name: "Spicy Kaarapoosa", price: 400 },
+        { name: "Billalu/Chekkalu", price: 400 },
+        { name: "Murukulu", price: 400 },
+        { name: "Boondhi/Mixture", price: 400 },
+        { name: "Ragi Murukulu", price: 400 },
+        { name: "Chapathi Chips", price: 400 },
+      ]},
+      { name: "🌾 Other Healthy Homemade Items", items: [
+        { name: "Ginger Honey Mix", price: 800 },
+        { name: "Multi Millets Flour", price: 220 },
+        { name: "Multi grain atta", price: 180 },
+        { name: "Protein-rich milk powder prepared with Dry Nuts and sprouted Finger Millets - Cardamom Flavour", price: 800 },
+        { name: "Protein-rich milk powder prepared with Dry Nuts and sprouted Finger Millets - Chocolate Flavour", price: 800 },
+        { name: "Protein-rich milk powder prepared with Dry Nuts and sprouted Finger Millets - Cardamom + Chocolate Flavour", price: 900 },
+        { name: "Hair oil(Hibiscus leaves,Hibiscus flower,Curry leaves,Fenugreek seeds,Onion,Indian gooseberry (Amla),Henna leaves,Cloves,Bhringraj (False daisy),Castor oil,Holy basil,Pure coconut oil,Neem leaves)", price: 180 },
+      ]}
+    ];
+
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    function toggleNav() {
+      const sidebar = document.getElementById("sidebar");
+      const body = document.body;
+      sidebar.classList.toggle("open");
+      body.classList.toggle("sidebar-open");
+    }
+
+    function renderCategories() {
+      const container = document.getElementById("products");
+      container.innerHTML = "";
+      categories.forEach(category => {
+        const section = document.createElement("section");
+        section.className = "category";
+        section.innerHTML = `<h2>${category.name}</h2>`;
+        category.items.forEach(item => {
+          const div = document.createElement("div");
+          div.className = "item";
+          div.innerHTML = `
+            <label>${item.name} – ₹${item.price}/kg</label>
+            <button onclick="changeQty('${item.name}', -1)">−</button>
+            <input type="number" min="0" value="0" id="${item.name}" />
+            <button onclick="changeQty('${item.name}', 1)">+</button>
+            <button onclick="addToCart('${item.name}', ${item.price})">Add</button>
+          `;
+          section.appendChild(div);
+        });
+        container.appendChild(section);
+      });
+    }
+
+    function changeQty(id, delta) {
+      const input = document.getElementById(id);
+      let val = parseInt(input.value) || 0;
+      val = Math.max(0, val + delta);
+      input.value = val;
+    }
+
+    function addToCart(itemName, price) {
+      const quantity = parseInt(document.getElementById(itemName).value);
+      if (quantity <= 0) {
+        alert("Please enter a valid quantity greater than 0.");
+        return;
+      }
+      const existing = cart.find(item => item.itemName === itemName);
+      if (existing) {
+        existing.quantity += quantity;
+      } else {
+        cart.push({ itemName, price, quantity });
+      }
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCart();
+    }
+
+    function updateCart() {
+      const cartList = document.getElementById("cart-items");
+      const totalDisplay = document.getElementById("total");
+      cartList.innerHTML = "";
+      let total = 0;
+
+      cart.forEach(({ itemName, price, quantity }, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span>${itemName} – ₹${price}/kg</span>
+          <button onclick="adjustCartQty(${index}, -1)">−</button>
+          <input type="number" min="1" value="${quantity}" onchange="setCartQty(${index}, this.value)" />
+          <button onclick="adjustCartQty(${index}, 1)">+</button>
+          <button onclick="removeFromCart(${index})">Remove</button>
+        `;
+        cartList.appendChild(li);
+        total += price * quantity;
+      });
+
+      totalDisplay.textContent = total;
+    }
+
+    function setCartQty(index, value) {
+      const qty = Math.max(1, parseInt(value) || 1);
+      cart[index].quantity = qty;
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCart();
+    }
+
+    function adjustCartQty(index, delta) {
+      cart[index].quantity = Math.max(1, cart[index].quantity + delta);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCart();
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCart();
+    }
+
+    function confirmOrder() {
+      if (cart.length === 0) {
+        alert("Cart is empty!");
+        return;
+      }
+      if (confirm("Do you want to send this order via WhatsApp?")) {
+        sendOrder();
+      }
+    }
+
+    function sendOrder() {
+      const message = cart.map(item => `${item.itemName} – ${item.quantity}kg`).join("\n");
+      const encoded = encodeURIComponent("Hi, I'd like to order:\n" + message);
+      window.open(`https://wa.me/919848090705?text=${encoded}`, "_blank");
+      setTimeout(() => {
+        alert("✅ Your order has been prepared and WhatsApp has opened. Please review and send it.");
+      }, 1000);
+    }
+
+
+function filterItems() {
+  const query = document.getElementById("search-bar").value.toLowerCase();
+  const items = document.querySelectorAll(".item");
+  let found = false;
+
+  items.forEach(item => {
+    const label = item.querySelector("label").textContent.toLowerCase();
+    const match = label.includes(query);
+    item.style.display = match ? "flex" : "none";
+    if (match) found = true;
+  });
+
+  document.getElementById("no-results").style.display = found ? "none" : "block";
+}
+
+function clearSearch() {
+  document.getElementById("search-bar").value = "";
+  document.getElementById("no-results").style.display = "none";
+  document.querySelectorAll(".item").forEach(item => {
+    item.style.display = "flex";
+  });
+}
+    
+function toggleSection(id) {
+  // Hide all sections
+  document.getElementById("contact").style.display = "none";
+  document.getElementById("why").style.display = "none";
+  document.getElementById("order-summary").style.display = "none";
+  document.getElementById("products").style.display = "none";
+
+  // Hide search elements
+  document.getElementById("search-bar").style.display = "none";
+  document.getElementById("search-button").style.display = "none";
+  document.getElementById("clear-button").style.display = "none";
+  document.getElementById("no-results").style.display = "none";
+
+  // Show selected section
+  if (id === "home") {
+    document.getElementById("products").style.display = "block";
+    document.getElementById("search-bar").style.display = "block";
+    document.getElementById("search-button").style.display = "inline-block";
+    document.getElementById("clear-button").style.display = "inline-block";
+    document.querySelector(".cart").style.display = "block";
+    document.getElementById("home-btn").style.display = "none";
+  } else {
+    document.getElementById(id).style.display = "block";
+    document.getElementById("home-btn").style.display = "inline-block";
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  document.getElementById("sidebar").classList.remove("open");
+  document.body.classList.remove("sidebar-open");
+}
+
+
+
+function goHome() {
+  // Hide all other sections
+  document.getElementById("contact").style.display = "none";
+  document.getElementById("why").style.display = "none";
+  document.getElementById("order-summary").style.display = "none";
+
+  // Show home section
+  document.getElementById("products").style.display = "block";
+  document.querySelector(".cart").style.display = "block";
+
+  // Show search elements
+  document.getElementById("search-bar").style.display = "inline-block";
+  document.getElementById("search-button").style.display = "inline-block";
+  document.getElementById("clear-button").style.display = "inline-block";
+
+  // Reset "No results found" visibility
+  document.getElementById("no-results").style.display = "none";
+
+  // Hide back home button
+  document.getElementById("home-btn").style.display = "none";
+
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+    renderCategories();
+    updateCart();
+
+    let currentIndex = 0;
+    const track = document.getElementById("carouselTrack");
+    const images = track.getElementsByTagName("img");
+
+    function moveSlide(direction) {
+      const imageWidth = images[0].offsetWidth + 10;
+      currentIndex += direction;
+
+      if (currentIndex < 0) currentIndex = images.length - 1;
+      if (currentIndex >= images.length) currentIndex = 0;
+
+      track.style.transform = `translateX(-${currentIndex * imageWidth}px)`;
+    }
+
+    let autoScroll = setInterval(() => moveSlide(1), 3000);
+
+    track.addEventListener("mouseenter", () => clearInterval(autoScroll));
+    track.addEventListener("mouseleave", () => {
+      autoScroll = setInterval(() => moveSlide(1), 3000);
+    });
+  </script>
+</body>
+</html>
